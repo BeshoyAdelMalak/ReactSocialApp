@@ -11,16 +11,29 @@ interface Notification {
   message?: string;
   body?: string;
   type?: string;
+  entityType?: string;
   isRead?: boolean;
   createdAt?: string;
-  sender?: {
+  actor?: {
     name?: string;
+    photo?: string;
+  };
+  recipient?: {
+    name?: string;
+  };
+  entity?: {
+    _id?: string;
+    id?: string;
     image?: string;
   };
-}
+};
 
 interface NotificationsResponse {
-  data?: Notification[] | { notifications?: Notification[] };
+  data?:
+    | Notification[]
+    | {
+        notifications?: Notification[];
+      };
   notifications?: Notification[];
   message?: string;
 }
@@ -186,7 +199,7 @@ const markAllAsRead = async () => {
       throw new Error("Failed to mark all notifications as read");
     }
 
-    // Update the UI without reloading the page
+    
     setNotifications((prev) =>
       prev.map((notification) => ({
         ...notification,
@@ -298,11 +311,23 @@ const unreadCount = notifications.filter((n) => !n.isRead).length;
             {notifications.map((notification, index) => (
               <article
                 key={notification._id ?? notification.id ?? index}
-                onClick={(e) => {
-                    navigate(`/home/posts/${notification.entity._id}`)
-                        const id = notification._id ?? notification.id;
-                          if (id) markAsRead(id);
-                        }}
+                // onClick={(e) => {
+                //     navigate(`/home/posts/notifications/${notification.entity._id}`)
+                //         const id = notification._id ?? notification.id;
+                //           if (id) markAsRead(id);
+                //         }}
+                onClick={() => {
+  const postId = notification.entity?._id ?? notification.entity?.id;
+  const id = notification._id ?? notification.id;
+
+  if (postId) {
+    navigate(`/home/posts/notifications/${postId}`);
+  }
+
+  if (id) {
+    void markAsRead(id);
+  }
+}}
                 className="group flex gap-4 rounded-2xl border border-gray-800 bg-gray-950 p-4 transition duration-200 hover:border-gray-700 hover:bg-gray-900/70 sm:p-5"
               >
                <Notification size="32" color="#f47373" variant="Bold"/>
@@ -311,9 +336,9 @@ const unreadCount = notifications.filter((n) => !n.isRead).length;
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
                     <h3 className="text-sm font-semibold text-gray-200 sm:text-base">
-                        <p className="">{notification.recipient.name} you  {notification.entityType} </p>
+                        {notification.recipient?.name} you  {notification.entityType}
                     </h3>
-                     <img src={notification.entity.image} className="w-15 rounded-full"></img>
+                     <img src={notification.entity?.image} className="w-15 rounded-full"></img>
                     {!notification.isRead && (
                       <span
                         className="mt-1.5 h-2 w-2 rounded-full bg-blue-500"
@@ -323,10 +348,10 @@ const unreadCount = notifications.filter((n) => !n.isRead).length;
                   </div>
 
                   <p className="mt-2 break-words text-sm leading-6 text-gray-400 items-center flex gap-3">
-                   <span><img className="w-10 rounded-full" src={notification.actor.photo}></img> </span>
+                   <span><img className="w-10 rounded-full" src={notification.actor?.photo}></img> </span>
                     <span><p>{notification.type}</p></span>
                     <span>From </span>
-                    {notification.actor.name ??
+                    {notification.actor?.name ??
                       notification.body ??
                       "You have a new notification."}
                   </p>

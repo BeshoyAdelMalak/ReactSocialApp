@@ -28,7 +28,7 @@ export default function UserProfile() {
                     }
                 );
 
-                console.log("Profile data:", response.data);
+                console.log("Profile data: ", response.data);
                 setUser(response.data.data?.user ?? response.data.data ?? response.data);
             } catch (err: any) {
                 setError(
@@ -93,9 +93,8 @@ export default function UserProfile() {
     const result = await response.json();
     console.log("Cover uploaded successfully:", result);
 
-    // Update the displayed cover after uploading.
-    // Adjust this based on your API response.
-    setUser((prev) =>
+    
+    setUser((prev: String | null) =>
       prev ? { ...prev, cover: result.data?.cover || result.data?.user?.cover } : prev
     );
   } catch (error) {
@@ -105,7 +104,7 @@ export default function UserProfile() {
   }
 };
     return (
-    <div className="flex flex-col items-center gap-3 rounded-2xl bg-black px-6 py-8 text-center shadow-xl">
+    <div className="flex flex-col items-center gap-2 rounded-2xl bg-black px-4 py-8 text-center shadow-xl mx-auto min-h-16 max-w-7xl justify-between sm:px-6 lg:px-8">
             <div className="relative mb-16 w-full">
 
  
@@ -137,6 +136,11 @@ export default function UserProfile() {
     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
     <div className="absolute bottom-4 right-40 z-10 flex gap-4 text-white sm:gap-6">
+      <div className="text-center">
+        <p className="text-lg font-bold">{user?.bookmarksCount ?? 0}</p>
+        <p className="text-xs text-gray-200">Bookmarked Posts</p>
+      </div>
+      
       <div className="text-center">
         <p className="text-lg font-bold">{user?.followersCount ?? 0}</p>
         <p className="text-xs text-gray-200">Followers</p>
@@ -290,7 +294,7 @@ function Myposts() {
   }
 };
 
-    return (<div className="mx-auto w-3xl space-y-4 p-4">
+    return (<div className="mx-auto space-y-4 p-4 block min-h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <h1 className="text-2xl font-bold text-white">My Posts</h1>
 
         {posts.length === 0 ? (

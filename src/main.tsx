@@ -10,12 +10,14 @@ import Posts from './posts.tsx'
 import Userprofile from './userprofile.tsx'
 import Notifications from './usernotifications.tsx'
 import PostDetails from './postdetails.tsx'
+import { ProfilePage } from './posts.tsx'
 
 function Layout() {
   return (
     <>
+    
       <Navbar />
-
+    
       <div className="flex flex-col min-h-screen bg-[#090909] text-white">
         <main className="flex-grow">
           <Outlet />
@@ -59,7 +61,7 @@ const router = createBrowserRouter([
             element: <Posts />,
           },
           {
-            path: "/home/profile",
+            path: "/home/profile/",
             element: <Userprofile />,
           },
           {
@@ -67,8 +69,12 @@ const router = createBrowserRouter([
             element: <Notifications />,
           },
           {
-            path: "/home/posts/:id",
+            path: "/home/posts/notifications/:_id",
             element: <PostDetails />,
+          },
+          {
+            path: "/profile/*",
+            element: <ProfilePage />,
           },
         ],
       },

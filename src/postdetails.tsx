@@ -14,7 +14,7 @@ interface Post {
 }
 
 export default function PostDetails() {
-  const { id } = useParams<{ id: string }>();
+  const { _id } = useParams<{ _id: string }>();
   const navigate = useNavigate();
 
   const [post, setPost] = useState<Post | null>(null);
@@ -22,7 +22,7 @@ export default function PostDetails() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!id) {
+    if (!_id) {
       setError("Post ID is missing.");
       setLoading(false);
       return;
@@ -38,14 +38,11 @@ export default function PostDetails() {
         const token = localStorage.getItem("token");
 
         const response = await fetch(
-          `https://route-posts.routemisr.com/posts/${id}`,
+          `https://route-posts.routemisr.com/posts/${_id}`,
           {
             headers: {
-              ...(token
-                ? { Authorization: `Bearer ${token}` }
-                : {}),
-            },
-            signal: controller.signal,
+                      token: token || "",
+                    },signal: controller.signal,
           }
         );
 
@@ -55,8 +52,17 @@ export default function PostDetails() {
 
         const result = await response.json();
 
-        // Adjust this if your API returns a different response structure.
-        setPost(result.data?.post ?? result.data ?? result.post ?? result);
+        console.log(result +" data")
+        
+        const postData = result.data?.post ?? result.post ?? result.data ?? result;
+
+if (!postData?._id) {
+  console.error("Invalid post response:", result);
+  throw new Error("Post data was not found in the API response.");
+}
+
+setPost(postData);
+
       } catch (err) {
         if (err instanceof Error && err.name === "AbortError") return;
 
@@ -73,7 +79,7 @@ export default function PostDetails() {
     fetchPost();
 
     return () => controller.abort();
-  }, [id]);
+  }, [_id]);
 
   if (loading) {
     return (
